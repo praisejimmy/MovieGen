@@ -50,13 +50,10 @@ def AddCallBack():
     movie_len = len(movie_name)
 
     packet_len = packet_hdr_size + 8 + genre_len + movie_len
-    print(packet_len)
     SendHeader(s, ServerCommands.MOVIE_ADD.value, packet_len)
 
     pack_string = '=I' + str(genre_len) + 'sI' + str(movie_len) + 's'
-    print(pack_string)
     packed = pack(pack_string, genre_len, genre_name.encode(), movie_len, movie_name.encode())
-    print(packed)
     s.send(packed)
 
     (ret_status, packet_len) = RecvHeader(s)
