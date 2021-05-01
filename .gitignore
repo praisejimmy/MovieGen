@@ -51,10 +51,10 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-#movie_server
-#movie_client
-#action_movies.list
-#comedy_movies.list
-#horror_movies.list
-#scifi_movies.list
-#romcom_movies.list
+movie_server
+movie_client
+action_movies.list
+comedy_movies.list
+horror_movies.list
+scifi_movies.list
+romcom_movies.list
