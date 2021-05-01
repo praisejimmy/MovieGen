@@ -119,8 +119,8 @@ int remove_movie(int list_fd, uint8_t *entry_name, movie_genre genre)
             sprintf(list_path, "%s/%s", MOVIE_LIST_LOC, ROMCOM_LIST_FILE);
             break;
         default:
-            printf("Received invalid genre\n");
-            exit(-1);
+            printf("Received invalid genre in removal\n");
+            return -1;
     }
 
     bytes = read(list_fd, &num_entries, sizeof(uint32_t));
@@ -173,7 +173,6 @@ int remove_movie(int list_fd, uint8_t *entry_name, movie_genre genre)
     {
         close(temp_fd);
         unlink(temp_path);
-        printf("No entries left\n");
         return 0;
     }
 
@@ -181,7 +180,6 @@ int remove_movie(int list_fd, uint8_t *entry_name, movie_genre genre)
     write(temp_fd, &num_entries_update, sizeof(uint32_t));
     close(temp_fd);
     rename(temp_path, list_path);
-    printf("Removal of entry successful\n");
     return 0;
 }
 
@@ -195,12 +193,11 @@ int add_movie(int sockfd)
     movie_genre genre;
 
     bytes = read(sockfd, &component_size, sizeof(uint32_t));
-    printf("Received genre size: %u\n", component_size);
 
     if (component_size > (RECV_BUF_LEN - 1))
     {
         printf("Size of genre too large\n");
-        exit(-1);
+        return -1;
     }
 
     bytes = read(sockfd, &recv_buf, component_size);
