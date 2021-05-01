@@ -5,7 +5,6 @@ import tkinter.messagebox
 import socket
 from struct import *
 from enum import Enum
-import numpy as np
 
 class ServerErrors(Enum):
     SERR_SUCCESS = 0
