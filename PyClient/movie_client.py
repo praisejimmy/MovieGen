@@ -93,7 +93,6 @@ def GetCallBack():
 
 top = tkinter.Tk()
 top.title('Movie Generator')
-top.maxsize(280, 85)
 
 genre_label = tkinter.Label(top, text="Movie Genre")
 genre_label.grid(row = 0, column = 0)
