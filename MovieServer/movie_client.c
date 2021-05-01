@@ -31,7 +31,7 @@ typedef enum
 
 typedef struct
 {
-    movie_cmd cmd;
+    uint8_t cmd;
     uint32_t packet_len;
 } __attribute__((__packed__)) movie_cmd_hdr;
 
