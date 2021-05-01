@@ -93,6 +93,15 @@ movie_genre get_genre_from_name(const char *genre_name)
     }
 }
 
+int send_error(int sockfd, server_ret_code error_code)
+{
+    movie_ret_hdr ret_hdr;
+    ret_hdr.ret_status = error_code;
+    ret_hdr.packet_len = sizeof(movie_ret_hdr);
+    write(sockfd, &ret_hdr, ret_hdr.packet_len);
+    return 0;
+}
+
 int remove_movie(int list_fd, uint8_t *entry_name, movie_genre genre)
 {
     int temp_fd, i;
@@ -313,7 +322,8 @@ int get_movie(int sockfd)
     if (component_size > (RECV_BUF_LEN - 1))
     {
         printf("Size of genre too large\n");
-        exit(-1);
+        send_error(sockfd, SERR_GETERROR);
+        return -1;
     }
 
     bytes = read(sockfd, &recv_buf, component_size);
@@ -321,7 +331,8 @@ int get_movie(int sockfd)
     if (bytes != component_size)
     {
         printf("Unable to read genre\n");
-        exit(-1);
+        send_error(sockfd, SERR_GETERROR);
+        return -1;
     }
 
     for (i = 0; i < component_size; i++){
@@ -356,18 +367,14 @@ int get_movie(int sockfd)
     if ((list_fd = open(list_path, O_RDWR)) < 0)
     {
         printf("Could not open get file\n");
-        ret_hdr.ret_status = SERR_GETERROR;
-        ret_hdr.packet_len = sizeof(movie_ret_hdr);
-        write(sockfd, &ret_hdr, ret_hdr.packet_len);
+        send_error(sockfd, SERR_GETERROR);
         return -1;
     }
     bytes = read(list_fd, &num_movies, sizeof(uint32_t));
     if (bytes != sizeof(uint32_t))
     {
         printf("Could not read number movies\n");
-        ret_hdr.ret_status = SERR_GETERROR;
-        ret_hdr.packet_len = sizeof(movie_ret_hdr);
-        write(sockfd, &ret_hdr, ret_hdr.packet_len);
+        send_error(sockfd, SERR_GETERROR);
         return -1;
     }
     rand_movie = rand() % num_movies;
@@ -377,9 +384,7 @@ int get_movie(int sockfd)
         if (bytes != sizeof(uint32_t))
         {
             printf("Could not read entry size\n");
-            ret_hdr.ret_status = SERR_GETERROR;
-            ret_hdr.packet_len = sizeof(movie_ret_hdr);
-            write(sockfd, &ret_hdr, ret_hdr.packet_len);
+            send_error(sockfd, SERR_GETERROR);
             return -1;
         }
         lseek(list_fd, entry_size, SEEK_CUR);
@@ -388,18 +393,14 @@ int get_movie(int sockfd)
     if (bytes != sizeof(uint32_t))
     {
         printf("Could not read final entry size\n");
-        ret_hdr.ret_status = SERR_GETERROR;
-        ret_hdr.packet_len = sizeof(movie_ret_hdr);
-        write(sockfd, &ret_hdr, ret_hdr.packet_len);
+        send_error(sockfd, SERR_GETERROR);
         return -1;
     }
     bytes = read(list_fd, send_buf, entry_size);
     if (bytes != entry_size)
     {
         printf("Could not read final entry\n");
-        ret_hdr.ret_status = SERR_GETERROR;
-        ret_hdr.packet_len = sizeof(movie_ret_hdr);
-        write(sockfd, &ret_hdr, ret_hdr.packet_len);
+        send_error(sockfd, SERR_GETERROR);
         return -1;
     }
     ret_hdr.ret_status = SERR_SUCCESS;
