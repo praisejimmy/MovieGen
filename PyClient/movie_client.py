@@ -60,6 +60,7 @@ def AddCallBack():
         tkinter.messagebox.showinfo( "Movie Add Result", "Error in adding movie.")
     else:
         tkinter.messagebox.showinfo( "Movie Add Result", "Successfully added movie!")
+    movie_entry.delete(0, 'end')
     ServerDisconnect(s)
 
 def GetCallBack():
