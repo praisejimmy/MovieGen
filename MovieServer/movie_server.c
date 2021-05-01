@@ -12,7 +12,7 @@
 
 #define LIST_PATH_MAX 256
 
-#define MOVIE_LIST_LOC   "/home/ryan/Documents/MovieGen/MovieLists"
+#define MOVIE_LIST_LOC   "/home/ryan/Documents/Projects/MovieGen/MovieServer/MovieLists"
 #define ACTION_LIST_FILE "action_movies.list"
 #define COMEDY_LIST_FILE "comedy_movies.list"
 #define HORROR_LIST_FILE "horror_movies.list"
@@ -53,13 +53,13 @@ typedef enum
 
 typedef struct
 {
-    uint8_t cmd;
+    uint32_t cmd;
     uint32_t packet_len;
 } __attribute__((__packed__)) movie_cmd_hdr;
 
 typedef struct
 {
-    uint8_t ret_status;
+    uint32_t ret_status;
     uint32_t packet_len;
 } __attribute__((__packed__)) movie_ret_hdr;
 
@@ -188,12 +188,14 @@ int remove_movie(int list_fd, uint8_t *entry_name, movie_genre genre)
 int add_movie(int sockfd)
 {
     int i, list_fd;
+    movie_ret_hdr ret_hdr;
     uint32_t component_size, bytes, movie_count;
     uint8_t recv_buf[RECV_BUF_LEN];
     char list_path[LIST_PATH_MAX];
     movie_genre genre;
 
     bytes = read(sockfd, &component_size, sizeof(uint32_t));
+    printf("Received genre size: %u\n", component_size);
 
     if (component_size > (RECV_BUF_LEN - 1))
     {
@@ -213,7 +215,7 @@ int add_movie(int sockfd)
         recv_buf[i] = tolower(recv_buf[i]);
     }
     recv_buf[component_size] = '\0';
-
+    printf("Recv genre: %s\n", recv_buf);
     // compare genre to name
     genre = get_genre_from_name(recv_buf);
     switch (genre)
@@ -239,7 +241,7 @@ int add_movie(int sockfd)
     }
 
     bytes = read(sockfd, &component_size, sizeof(uint32_t));
-
+    printf("Movie size: %u\n", component_size);
     if (bytes > (RECV_BUF_LEN - 1))
     {
         printf("Size of movie too large\n");
@@ -247,7 +249,12 @@ int add_movie(int sockfd)
     }
 
     bytes = read(sockfd, &recv_buf, component_size);
-
+    printf("Read bytes: %u\n", bytes);
+    for (i = 0; i < bytes; i++)
+    {
+        printf("%c ", recv_buf[i]);
+    }
+    printf("\n");
     if (bytes != component_size)
     {
         printf("Unable to read movie\n");
@@ -287,6 +294,9 @@ int add_movie(int sockfd)
         write(list_fd, &component_size, sizeof(uint32_t));
         write(list_fd, recv_buf, component_size);
     }
+    ret_hdr.ret_status = SERR_SUCCESS;
+    ret_hdr.packet_len = sizeof(movie_ret_hdr);
+    write(sockfd, &ret_hdr, sizeof(movie_ret_hdr));
     close(list_fd);
     return 0;
 }
@@ -413,17 +423,18 @@ void cmd_handler(int sockfd)
 {
     uint32_t bytes;
     movie_cmd_hdr cmd_hdr;
-
+    int i;
+    uint8_t test_buf[1024];
     bytes = read(sockfd, &cmd_hdr, sizeof(movie_cmd_hdr));
 
     if (bytes != sizeof(movie_cmd_hdr))
     {
-        printf("Invalid command header received with byte length %d\n", bytes);
-        exit(-1);
+       printf("Invalid command header received with byte length %d\n", bytes);
+       exit(-1);
     }
 
     printf("Recieved packet with len %d\n", cmd_hdr.packet_len);
-
+    printf("%u, %u\n", cmd_hdr.cmd, cmd_hdr.packet_len);
     switch (cmd_hdr.cmd)
     {
         case MOVIE_ADD:

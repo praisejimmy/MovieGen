@@ -5,6 +5,7 @@ import tkinter.messagebox
 import socket
 from struct import *
 from enum import Enum
+import numpy as np
 
 class ServerErrors(Enum):
     SERR_SUCCESS = 0
@@ -17,19 +18,19 @@ class ServerCommands(Enum):
     MOVIE_LIST = 3
     MOVIE_GET = 4
 
-HOST = ''       # Movie server host ip
+HOST = '10.0.0.232'       # Movie server host ip
 PORT = 8888     # Port used by movie server
 
 genres = ['Action', 'Comedy', 'Horror', 'SciFi', 'Romantic Comedy']
 server_genres = ['action', 'comedy', 'horror', 'scici', 'romcom']
-packet_hdr_size = 5
+packet_hdr_size = 8
 
 def SendHeader(s, cmd_type, packet_len):
-    s.sendall(pack('BI', cmd_type, packet_len))
+    s.send(pack('=II', cmd_type, packet_len))
 
 def RecvHeader(s):
     recv_packet = s.recv(packet_hdr_size)
-    return unpack('BI', recv_packet)
+    return unpack('=II', recv_packet)
 
 def ServerConnect():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -49,15 +50,17 @@ def AddCallBack():
     movie_len = len(movie_name)
 
     packet_len = packet_hdr_size + 8 + genre_len + movie_len
-    SendHeader(s, MOVIE_ADD, packet_len)
+    print(packet_len)
+    SendHeader(s, ServerCommands.MOVIE_ADD.value, packet_len)
 
-    pack_string = 'I' + str(genre_len) + 'sI' + str(movie_len) + 's'
+    pack_string = '=I' + str(genre_len) + 'sI' + str(movie_len) + 's'
+    print(pack_string)
     packed = pack(pack_string, genre_len, genre_name.encode(), movie_len, movie_name.encode())
+    print(packed)
+    s.send(packed)
 
-    s.sendall(packed)
-
-    (ret_status, packet_len) = RecvHeader()
-    if (ret_status == SERR_ADDERROR):
+    (ret_status, packet_len) = RecvHeader(s)
+    if (ret_status == ServerErrors.SERR_ADDERROR.value):
         tkinter.messagebox.showinfo( "Movie Add Result", "Error in adding movie.")
     else:
         tkinter.messagebox.showinfo( "Movie Add Result", "Successfully added movie!")
@@ -70,22 +73,21 @@ def GetCallBack():
     genre_len = len(genre_name)
 
     packet_len = packet_hdr_size + 4 + genre_len
-    SendHeader(s, MOVIE_GET, packet_len)
-    pack_string = 'I' + str(genre_len) + 's'
-    packed = pack(pack_string, genre_len, genre_name.encode(), movie_len, movie_name.encode())
+    SendHeader(s, ServerCommands.MOVIE_GET.value, packet_len)
+    pack_string = '=I' + str(genre_len) + 's'
+    packed = pack(pack_string, genre_len, genre_name.encode())
 
-    s.sendall(packed)
+    s.send(packed)
 
-    (ret_status, packet_len) = RecvHeader()
+    (ret_status, packet_len) = RecvHeader(s)
 
-    if (ret_status == SERR_GETERROR):
+    if (ret_status == ServerErrors.SERR_GETERROR.value):
         tkinter.messagebox.showinfo( "Movie Add Result", "Could not retrieve a movie.")
         return
 
-    movie_ret_size_bytes = s.recv(4)
-    movie_ret_size = unpack('I', movie_ret_size)
+    movie_ret_size = s.recv(4)[0]
 
-    movie_ret_bytes = s.recv(movie_ret_size)
+    (movie_ret_bytes) = s.recv(movie_ret_size)
 
     user_str = "Movie retrieved successfully!\n" + movie_ret_bytes.decode()
     tkinter.messagebox.showinfo( "Movie Add Result", user_str)
