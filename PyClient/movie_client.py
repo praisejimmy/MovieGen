@@ -99,17 +99,23 @@ top = tkinter.Tk()
 top.title('Movie Generator')
 top.maxsize(280, 85)
 
-genre_label = tkinter.Label(top, text="Movie Genre").grid(row = 0, column = 0)
+genre_label = tkinter.Label(top, text="Movie Genre")
+genre_label.grid(row = 0, column = 0)
 genre_variable = tkinter.StringVar(top)
 genre_variable.set(genres[0])
-genre_list = tkinter.OptionMenu(top, genre_variable, *genres).grid(row = 0, column = 1)
+genre_list = tkinter.OptionMenu(top, genre_variable, *genres)
+genre_list.grid(row = 0, column = 1)
 
-movie_label = tkinter.Label(top, text="Movie Name").grid(row = 1, column = 0)
-movie_entry = tkinter.Entry(top, bd =5).grid(row = 1, column = 1)
+movie_label = tkinter.Label(top, text="Movie Name")
+movie_label.grid(row = 1, column = 0)
+movie_entry = tkinter.Entry(top, bd =5)
+movie_entry.grid(row = 1, column = 1)
 
-add_button = tkinter.Button(top, text ="Add Movie", command = AddCallBack).grid(row = 1, column = 2)
+add_button = tkinter.Button(top, text ="Add Movie", command = AddCallBack)
+add_button.grid(row = 1, column = 2)
 
-get_button = tkinter.Button(top, text ="Get Movie", command = GetCallBack).grid(row = 3, column = 1)
+get_button = tkinter.Button(top, text ="Get Movie", command = GetCallBack)
+get_button.grid(row = 3, column = 1)
 
 # Code to add widgets will go here...
 top.mainloop()
