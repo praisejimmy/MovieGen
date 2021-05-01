@@ -58,6 +58,7 @@ def AddCallBack():
     (ret_status, packet_len) = RecvHeader(s)
     if (ret_status == ServerErrors.SERR_ADDERROR.value):
         tkinter.messagebox.showinfo( "Movie Add Result", "Error in adding movie.")
+        return
     else:
         tkinter.messagebox.showinfo( "Movie Add Result", "Successfully added movie!")
     movie_entry.delete(0, 'end')
