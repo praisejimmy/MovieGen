@@ -21,7 +21,7 @@ HOST = '10.0.0.232'       # Movie server host ip
 PORT = 8888     # Port used by movie server
 
 genres = ['Action', 'Comedy', 'Horror', 'SciFi', 'Romantic Comedy']
-server_genres = ['action', 'comedy', 'horror', 'scici', 'romcom']
+server_genres = ['action', 'comedy', 'horror', 'scifi', 'romcom']
 packet_hdr_size = 8
 
 def SendHeader(s, cmd_type, packet_len):
