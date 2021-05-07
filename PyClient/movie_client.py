@@ -17,7 +17,7 @@ class ServerCommands(Enum):
     MOVIE_LIST = 3
     MOVIE_GET = 4
 
-HOST = '10.0.0.232'       # Movie server host ip
+HOST = '10.0.0.156'       # Movie server host ip
 PORT = 8888     # Port used by movie server
 
 genres = ['Action', 'Comedy', 'Horror', 'SciFi', 'Romantic Comedy']
