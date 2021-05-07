@@ -12,7 +12,7 @@
 
 #define LIST_PATH_MAX 256
 
-#define MOVIE_LIST_LOC   "/home/ryan/Documents/Projects/MovieGen/MovieServer/MovieLists"
+#define MOVIE_LIST_LOC   "/etc/movie_lists"
 #define ACTION_LIST_FILE "action_movies.list"
 #define COMEDY_LIST_FILE "comedy_movies.list"
 #define HORROR_LIST_FILE "horror_movies.list"
