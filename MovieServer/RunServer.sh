@@ -3,4 +3,4 @@
 make clean
 make all
 echo Running movie server................
-Build/movie_server > etc/movie_lists/MovieServer.log
+Build/movie_server > /etc/movie_lists/MovieServer.log
