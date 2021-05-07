@@ -94,7 +94,7 @@ def GetCallBack():
     pass
 
 top = tkinter.Tk()
-top.title('Movie Generator')
+top.title('Zetflix')
 
 genre_label = tkinter.Label(top, text="Movie Genre")
 genre_label.grid(row = 0, column = 0)
